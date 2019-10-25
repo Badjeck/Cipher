@@ -2,6 +2,6 @@
 
 from biblioencryption import *
 
-message = "Je suis Yann Le Coz"
+message = "Fzmxfcjaan kmdixdkz"
 
-caesar_encryption(message)
+interval_decryption(message)
