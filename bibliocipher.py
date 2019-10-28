@@ -1,24 +1,26 @@
 import string
 
-def caesar_cipher(message):
+def caesar_cipher():
     '''
     Chiffre le message entré par l'utilisateur en utilisant le code César
     '''
-    listCipher = []
+    message = input("Entrez votre message: ")
     interval = int(input("Entrez la valeur du décalage: "))
-    for char in message.upper() :
+    listCipher = []
+    for char in message.upper():
         newChar = ord(char) - 64 + interval
-        if newChar > 26 :
+        if newChar > 26:
             rest = newChar - 26
-        else :
+        else:
             rest = newChar
         listCipher.append(chr(rest + 64))
-    print(f"\nVotre message:\n{message.upper()}\nVotre message crypté:\n{''.join(listCipher)}")
+    print(f"\nVotre message chiffré est:\n{''.join(listCipher)}")
 
-def substitution_cipher(message):
+def substitution_cipher():
     '''
     Chiffre le message entré par l'utilisateur en utilisant la méthode de substitution
     '''
+    message = input("Entrez votre message: ")
     alphabet = string.ascii_uppercase
     modifiedAlphabet = ['I', 'A', 'N', 'D', 'E', 'V', 'O', 'P', 'Y', 'L', 'C', 'Z', 'B', 'R', 'D', 'X', 'H', 'T', 'F', 'M', 'S', 'G', 'K', 'Q', 'U', 'W']
     cipherMessage = ""
@@ -28,4 +30,4 @@ def substitution_cipher(message):
             cipherMessage += letter
         else:
             cipherMessage += modifiedAlphabet[search]
-    print(cipherMessage)
+    print(f"\nVotre message chiffré est:\n{''.join(cipherMessage)}")
