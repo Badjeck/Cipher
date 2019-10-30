@@ -2,85 +2,138 @@
 
 import os
 import time
+import string
+import curses.ascii
 from bibliocipher import *
+
+listMethods = [
+    "Chiffre de César",
+    "Chiffrement par substitution",
+    "Chiffre de Vigenère"]
+
 
 def leave_software():
     """
     Cette fonction affiche un message de fin quand l'utilisateur quitte le programme
     """
-    print("\n\tMerci d'avoir utilisé Cipher\n\n\t\t\t\t\tYann Le Coz")
+    print("\tMerci d'avoir utilisé Cipher\n\n\t\t\t\t\tYann LE COZ")
     time.sleep(4)
     os.system("clear")
 
-def show_error(keyboard):
+
+def show_error(keyboard, checkSubstitutionAlphabet=False, duplicate=False):
     """
     Cette fonction affiche un message d'erreur quand l'utilisateur entre des caractères incorrectes
     """
-    os.system("clear")
-    print("---------------------------------------------------")
+    print("----------------------------------------------------")
     print("                       ERREUR")
-    print("---------------------------------------------------")
-    print(f"L'option que vous venez d'entrer ({keyboard}) est incorrecte\n")
+    print("----------------------------------------------------")
+    if checkSubstitutionAlphabet:
+        if duplicate:
+            print(
+                f"La lettre que vous venez d'entrer ({keyboard.upper()}) existe déjà.\n\nVeuillez en entrer une nouvelle:")
+        else:
+            print(
+                f"La lettre que vous venez d'entrer ({keyboard}) est incorrecte.\n\nVeuillez entrer de nouveau une lettre de l'alphabet:")
+    else:
+        print(
+            f"L'option que vous venez d'entrer ({keyboard}) est incorrecte.\n")
+
 
 def do_you_want_to_continue():
     """
     Cette fonction permet de retourner au menu principal ou de quitter le programme
     """
-    reponse = ''
-    while reponse.upper() != 'O' and reponse.upper() != 'N':
-        if reponse != '':
-            show_error(reponse)
-        print("---------------------------------------------------")
-        reponse = input("\nVoulez-vous retourner au menu principal ? (O/N)\n")
-        if reponse.upper() == 'O':
+    answerKeyboard = ''
+    while answerKeyboard.upper() != 'O' and answerKeyboard.upper() != 'N':
+        if answerKeyboard != '':
             os.system("clear")
-            print("---------------------------------------------------")
-            print("                  MENU PRINCIPAL")
-            print("---------------------------------------------------")
+            show_error(answerKeyboard)
+        print("----------------------------------------------------")
+        answerKeyboard = input(
+            "\nVoulez-vous retourner au menu principal ? (O/N)\n")
+        if answerKeyboard.upper() == 'O':
+            os.system("clear")
+            print("----------------------------------------------------")
+            print("                     MENU PRINCIPAL")
+            print("----------------------------------------------------")
             execute_cipher()
-        elif reponse.upper() == 'N':
+        elif answerKeyboard.upper() == 'N':
+            print("\n")
             leave_software()
+
 
 def execute_cipher():
     """
     Cette fonction est le coeur de Cipher, c'est à partir de celle-ci que l'utilisateur peut chiffrer ses messages
     """
     choiceOfCipherMethod = ''
-    while choiceOfCipherMethod != '1' and choiceOfCipherMethod != '2' and choiceOfCipherMethod.upper() != 'C' and choiceOfCipherMethod.upper() != 'Q':
+    while choiceOfCipherMethod != '1' and choiceOfCipherMethod != '2' and choiceOfCipherMethod != '3' and choiceOfCipherMethod.upper(
+    ) != 'C' and choiceOfCipherMethod.upper() != 'Q':
         if choiceOfCipherMethod != '':
+            os.system("clear")
             show_error(choiceOfCipherMethod)
         print("Méthodes de chiffrement disponibles:")
-        print("1 - Chiffrement de César")
-        print("2 - Chiffrement de substitution")
+        for index, nameMethods in enumerate(listMethods, 1):
+            print(f"{index} - {nameMethods}")
         print("\nC - Crédits\nQ - Sortir de Cipher")
-        print("---------------------------------------------------")
+        print("----------------------------------------------------")
         choiceOfCipherMethod = input("\nEntrez l'index d'une de ces options: ")
     os.system("clear")
     if choiceOfCipherMethod == '1':
-        print("---------------------------------------------------")
-        print("                 MÉTHODE DE CÉSAR")
-        print("---------------------------------------------------")
-        caesar_cipher()
+        print("----------------------------------------------------")
+        print("                 CHIFFRE DE CÉSAR")
+        print("----------------------------------------------------")
+        message = input("Entrez votre message: ")
+        interval = int(input("Entrez la valeur du décalage: "))
+        caesar_cipher(message, interval)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '2':
-        print("---------------------------------------------------")
-        print("              MÉTHODE DE SUBSTITUTION")
-        print("---------------------------------------------------")
-        substitution_cipher()
+        print("----------------------------------------------------")
+        print("             CHIFFREMENT PAR SUBSTITUTION")
+        print("----------------------------------------------------")
+        message = input("Entrez votre message: ")
+        key = []
+        print("\nCONFIGURATION DE L'ALPHABET DE SUBSTITUTION")
+        for letterAlphabet in string.ascii_uppercase:
+            letterUser = str(input(f"\t{letterAlphabet}: "))
+            while len(letterUser) != 1 or letterUser.upper() in key or letterUser.isnumeric(
+            ) or letterUser.upper() == ' ' or curses.ascii.ispunct(letterUser):
+                print("\n")
+                if letterUser.upper() in key:
+                    show_error(
+                        letterUser,
+                        checkSubstitutionAlphabet=True,
+                        duplicate=True)
+                else:
+                    show_error(letterUser, checkSubstitutionAlphabet=True)
+                letterUser = str(input(f"\t{letterAlphabet}: "))
+            key.append(letterUser.upper())
+        substitution_cipher(message, key)
+        do_you_want_to_continue()
+    elif choiceOfCipherMethod == '3':
+        print("----------------------------------------------------")
+        print("                 CHIFFRE DE VIGENÈRE")
+        print("----------------------------------------------------")
+        message = input("Entrez votre message: ")
+        key = input("Entrez votre clé de chiffrement: ")
+        vigenere_cipher(message, key)
         do_you_want_to_continue()
     elif choiceOfCipherMethod.upper() == 'C':
-        print("---------------------------------------------------")
-        print("                     CRÉDITS")
-        print("---------------------------------------------------")
-        print("VERSION:                                     v1.0.1\n")
-        print("AUTEUR:                                 Yann Le Coz")
-        print("ÉTABLISSEMENT:                 Bordeaux Ynov Campus")
+        print("----------------------------------------------------")
+        print("                      CRÉDITS")
+        print("----------------------------------------------------")
+        print("VERSION:                                      v1.0.2\n")
+        print("AUTEUR:                                  Yann LE COZ")
+        print("ÉTABLISSEMENT:                  Bordeaux Ynov Campus")
         do_you_want_to_continue()
-    elif choiceOfCipherMethod.upper() == 'Q' :
+    elif choiceOfCipherMethod.upper() == 'Q':
         leave_software()
 
+
 os.system("clear")
-print("---------------------------------------------------")
-print("              BIENVENUE DANS CIPHER")
-print("---------------------------------------------------")
+print("----------------------------------------------------")
+print("                 BIENVENUE DANS CIPHER")
+print("----------------------------------------------------")
+print("Cette application crypte des messages en fonction de\ndifférentes méthodes de chiffrement.\n")
 execute_cipher()
