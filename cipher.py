@@ -2,7 +2,6 @@
 
 import os
 import time
-import string
 import curses.ascii
 from bibliocipher import *
 
@@ -117,7 +116,7 @@ def cipher_core():
                 else:
                     show_error(letterUser, False, True)
                 letterUser = str(input(f"\t{letterAlphabet}: "))
-            key.append(letterUser.upper())
+            key.append(unidecode(letterUser).upper())
         substitution_encryption(message, key)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '3':

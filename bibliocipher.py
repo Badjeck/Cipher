@@ -1,4 +1,5 @@
 import string
+from unidecode import unidecode
 
 
 def caesar_encryption(message, interval):
@@ -6,7 +7,7 @@ def caesar_encryption(message, interval):
     Encrypts the message entered by the user using Caesar cipher.
     '''
     listCipher = ""
-    for char in message.upper():
+    for char in unidecode(message).upper():
         newChar = ord(char) - 64 + interval
         if newChar > 26:
             rest = newChar - 26
@@ -22,7 +23,7 @@ def substitution_encryption(message, key):
     '''
     alphabet = string.ascii_uppercase
     cipherMessage = ""
-    for letter in message.upper():
+    for letter in unidecode(message).upper():
         search = alphabet.find(letter)
         if search < 0:
             cipherMessage += letter
@@ -64,7 +65,7 @@ def vigenere_encryption(message, key):
 
     alphabet = string.ascii_uppercase
     cipherMessage = []
-    for counter, letter in enumerate(message.replace(
+    for counter, letter in enumerate(unidecode(message).replace(
             "'",
             '').replace(
             ' ',
@@ -76,10 +77,10 @@ def vigenere_encryption(message, key):
         cipherMessage.append(
             define_corresponding_letter(
                 letter,
-                key.upper()[
+                unidecode(key).upper()[
                     counter % len(
-                        key.upper())]))
-    for counter, letter in enumerate(message.upper()):
+                        unidecode(key).upper())]))
+    for counter, letter in enumerate(unidecode(message).upper()):
         if letter not in alphabet:
             cipherMessage.insert(counter, letter)
     print(f"\nVotre message chiffré est:\n{''.join(cipherMessage)}")
