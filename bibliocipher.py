@@ -74,12 +74,13 @@ def vigenere_encryption(message, key):
                 '').replace(
                     '.',
             '').upper()):
-        cipherMessage.append(
-            define_corresponding_letter(
-                letter,
-                unidecode(key).upper()[
-                    counter % len(
-                        unidecode(key).upper())]))
+        if letter in alphabet and letter.isnumeric() == False:
+            cipherMessage.append(
+                define_corresponding_letter(
+                    letter,
+                    unidecode(key).upper()[
+                        counter % len(
+                            unidecode(key).upper())]))
     for counter, letter in enumerate(unidecode(message).upper()):
         if letter not in alphabet:
             cipherMessage.insert(counter, letter)
