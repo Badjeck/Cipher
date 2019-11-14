@@ -51,13 +51,13 @@ def do_you_want_to_continue():
     Allows the user to return to the main menu or exit the program.
     """
     answerKeyboard = ''
+    print("---------------------------------------------------------------\n")
     while answerKeyboard.upper() != 'O' and answerKeyboard.upper() != 'N':
         if answerKeyboard != '':
             os.system("clear")
             show_error(answerKeyboard)
-        print("---------------------------------------------------------------")
         answerKeyboard = input(
-            "\nVoulez-vous retourner au menu principal ? (O/N)\n")
+            "Voulez-vous retourner au menu principal (O/N)? ")
         if answerKeyboard.upper() == 'O':
             os.system("clear")
             print("---------------------------------------------------------------")
@@ -71,9 +71,25 @@ def do_you_want_to_continue():
 
 def cipher_core():
     """
-    This is the general function of Cipher, it is from it that users can encrypt their various messages.
+    This is the general function of Cipher, it is from it that users can encrypt or decrypt their various messages.
     """
+
+    def display_options_message():
+        """
+        Allows the user to choose to encrypt or decrypt a message he has in his possession.
+        """
+        choiceOfOption = ''
+        print("---------------------------------------------------------------")
+        print("                           OPTIONS")
+        print("---------------------------------------------------------------")
+        print("1 - Chiffrer un message\n2 - Déchiffrer un message")
+        print("---------------------------------------------------------------\n")
+        while choiceOfOption != '1' and choiceOfOption != '2':
+            choiceOfOption = input("Entrez l'index d'une de ces options: ")
+        return choiceOfOption
+
     choiceOfCipherMethod = ''
+    message = ''
     while choiceOfCipherMethod != '1' and choiceOfCipherMethod != '2' and choiceOfCipherMethod != '3' and choiceOfCipherMethod.upper(
     ) != 'C' and choiceOfCipherMethod.upper() != 'Q':
         if choiceOfCipherMethod != '':
@@ -82,22 +98,30 @@ def cipher_core():
         print("Méthodes de chiffrement disponibles:")
         for index, nameMethods in enumerate(listMethods, 1):
             print(f"{index} - {nameMethods}")
-        print("\nC - Crédits\nQ - Sortir de Cipher")
-        print("---------------------------------------------------------------")
+        print("\nC - Crédits\nQ - Sortir de Cipher\n---------------------------------------------------------------")
         choiceOfCipherMethod = input("\nEntrez l'index d'une de ces options: ")
     if choiceOfCipherMethod.upper() != 'Q':
         os.system("clear")
     if choiceOfCipherMethod == '1':
+        choiceOfOption = display_options_message()
+        os.system("clear")
         print("---------------------------------------------------------------")
         print("                      CHIFFRE DE CÉSAR")
         print("---------------------------------------------------------------")
-        message = input("Entrez votre message: ")
-        shift = input("Entrez la valeur du décalage: ")
-        while shift.isnumeric() == False:
+        while not message:
+            if choiceOfOption == '1':
+                message = input("Entrez votre message: ")
+            else:
+                message = input("Entrez le message chiffré: ")
+        offset = input("Entrez la valeur du décalage: ")
+        while offset.isnumeric() == False:
             print("\n")
-            show_error(shift, True)
-            shift = input("\tVeuillez entrez le nombre de décalage: ")
-        caesar_encryption(message, int(shift))
+            show_error(offset, True)
+            offset = input("\tVeuillez entrez le nombre de décalage: ")
+        if choiceOfOption == '1':
+            caesar_encryption(message, int(offset))
+        else:
+            caesar_encryption(message, int(offset), True)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '2':
         print("---------------------------------------------------------------")
@@ -144,5 +168,5 @@ os.system("clear")
 print("---------------------------------------------------------------")
 print("                    BIENVENUE DANS CIPHER")
 print("---------------------------------------------------------------")
-print("Cette application chiffre des messages en fonction de plusieurs\nméthodes de chiffrement synchrone.\n")
+print("Cette application chiffre et déchiffre des messages en fonction\nde plusieurs méthodes de chiffrement synchrone.\n")
 cipher_core()
