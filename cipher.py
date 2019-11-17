@@ -88,6 +88,20 @@ def cipher_core():
             choiceOfOption = input("Entrez l'index d'une de ces options: ")
         return choiceOfOption
 
+    def check_key(key, letterOfAlphabet, enteredCharacter):
+        """
+        Verifies that the encryption key entered by the user has no duplicate characters, no numbers and no special characters.
+        """
+        while len(enteredCharacter) != 1 or enteredCharacter.upper() in key or enteredCharacter.isnumeric() or enteredCharacter.upper() == ' ' or curses.ascii.ispunct(enteredCharacter):
+            print("\n")
+            if enteredCharacter.upper() in key:
+                show_error(enteredCharacter, False, True, True)
+            else:
+                show_error(enteredCharacter, False, True)
+            enteredCharacter = input(f"\t{letterOfAlphabet}: ")
+        else:
+            key.append(unidecode(enteredCharacter).upper())
+
     choiceOfCipherMethod = ''
     message = ''
     while choiceOfCipherMethod != '1' and choiceOfCipherMethod != '2' and choiceOfCipherMethod != '3' and choiceOfCipherMethod.upper(
@@ -117,7 +131,7 @@ def cipher_core():
         while offset.isnumeric() == False:
             print("\n")
             show_error(offset, True)
-            offset = input("\tVeuillez entrez le nombre de décalage: ")
+            offset = input("\tVeuillez entrer le nombre de décalage: ")
         if choiceOfOption == '1':
             caesar_encryption(message, int(offset))
         else:
@@ -131,16 +145,8 @@ def cipher_core():
         key = []
         print("\nCONFIGURATION DE L'ALPHABET DE SUBSTITUTION")
         for letterAlphabet in string.ascii_uppercase:
-            letterUser = str(input(f"\t{letterAlphabet}: "))
-            while len(letterUser) != 1 or letterUser.upper() in key or letterUser.isnumeric(
-            ) or letterUser.upper() == ' ' or curses.ascii.ispunct(letterUser):
-                print("\n")
-                if letterUser.upper() in key:
-                    show_error(letterUser, False, True, True)
-                else:
-                    show_error(letterUser, False, True)
-                letterUser = str(input(f"\t{letterAlphabet}: "))
-            key.append(unidecode(letterUser).upper())
+            letterUser = input(f"\t{letterAlphabet}: ")
+            check_key(key, letterAlphabet, unidecode(letterUser).upper())
         substitution_encryption(message, key)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '3':
