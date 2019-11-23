@@ -44,7 +44,7 @@ def show_error(
     else:
         print(
             f"L'option que vous venez d'entrer ({keyboard}) est incorrecte.\n")
-
+    
 
 def do_you_want_to_continue():
     """
@@ -88,19 +88,6 @@ def cipher_core():
             choiceOfOption = input("Entrez l'index d'une de ces options: ")
         return choiceOfOption
 
-    def check_key(key, letterOfAlphabet, enteredCharacter):
-        """
-        Verifies that the encryption key entered by the user has no duplicate characters, no numbers and no special characters.
-        """
-        while len(enteredCharacter) != 1 or enteredCharacter.upper() in key or enteredCharacter.isnumeric() or enteredCharacter.upper() == ' ' or curses.ascii.ispunct(enteredCharacter):
-            print("\n")
-            if enteredCharacter.upper() in key:
-                show_error(enteredCharacter, False, True, True)
-            else:
-                show_error(enteredCharacter, False, True)
-            enteredCharacter = input(f"\t{letterOfAlphabet}: ")
-        else:
-            key.append(unidecode(enteredCharacter).upper())
 
     choiceOfCipherMethod = ''
     message = ''
@@ -123,10 +110,7 @@ def cipher_core():
         print("                      CHIFFRE DE CÉSAR")
         print("---------------------------------------------------------------")
         while not message:
-            if choiceOfOption == '1':
-                message = input("Entrez votre message: ")
-            else:
-                message = input("Entrez le message chiffré: ")
+            message = input("Entrez votre message: ") if choiceOfOption == '1' else input("Entrez le message chiffré: ")
         offset = input("Entrez la valeur du décalage: ")
         while offset.isnumeric() == False:
             print("\n")
@@ -138,16 +122,29 @@ def cipher_core():
             caesar_encryption(message, int(offset), True)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '2':
+        choiceOfOption = display_options_message()
+        os.system("clear")
         print("---------------------------------------------------------------")
         print("                 CHIFFREMENT PAR SUBSTITUTION")
         print("---------------------------------------------------------------")
-        message = input("Entrez votre message: ")
         key = []
-        print("\nCONFIGURATION DE L'ALPHABET DE SUBSTITUTION")
-        for letterAlphabet in string.ascii_uppercase:
-            letterUser = input(f"\t{letterAlphabet}: ")
-            check_key(key, letterAlphabet, unidecode(letterUser).upper())
-        substitution_encryption(message, key)
+        while not message:
+            message = input("Entrez votre message: ") if choiceOfOption == '1' else input("Entrez le message chiffré: ")
+        if choiceOfOption == '1':
+            print("\nCONFIGURATION DE L'ALPHABET DE SUBSTITUTION")
+            for letterAlphabet in string.ascii_uppercase:
+                letterUser = input(f"\t{letterAlphabet}: ")
+                while len(letterUser) != 1 or letterUser.upper() in key or letterUser.isnumeric(
+                ) or letterUser.upper() == ' ' or curses.ascii.ispunct(letterUser):
+                    print("\n")
+                    show_error(letterUser, False, True, True) if letterUser.upper() in key else show_error(letterUser, False, True)
+                    letterUser = input(f"\t{letterAlphabet}: ")
+                else:
+                    key.append(unidecode(letterUser).upper())
+            substitution_encryption(message, key)
+        else:
+            key = input("Entrez votre clé de chiffrement: ")
+            substitution_encryption(message, unidecode(key).upper(), True)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '3':
         print("---------------------------------------------------------------")
@@ -161,8 +158,8 @@ def cipher_core():
         print("---------------------------------------------------------------")
         print("                          CRÉDITS")
         print("---------------------------------------------------------------")
-        print("VERSION:                                                   v1.0\n")
-        print("AUTEUR:                                             Yann LE COZ")
+        print("VERSION:                                                   v1.0")
+        print("\nAUTEUR:                                             Yann LE COZ")
         print("ÉTABLISSEMENT:                             Bordeaux Ynov Campus")
         do_you_want_to_continue()
     elif choiceOfCipherMethod.upper() == 'Q':
