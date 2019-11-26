@@ -35,7 +35,7 @@ def caesar_encryption(message, offset, decode=False):
             cipherMessage += chr(newLetter + 65)
         else:
             cipherMessage += letter
-    print(f"\nVotre message chiffré est:\n{cipherMessage}")
+    print(f"\nLe message d'origine est:\n{''.join(cipherMessage)}" if decode else f"\nVotre message chiffré est:\n{cipherMessage}")
 
 
 def substitution_encryption(message, key, decode=False):
@@ -43,35 +43,51 @@ def substitution_encryption(message, key, decode=False):
     Encrypts or decrypts the message entered by the user using the substitution method.
     >>> substitution_encryption("Substitution methode", ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'W', 'X', 'C', 'V', 'B', 'N'])
     "LWZLMOMWMOGF DTMIGRT"
+    >>> substitution_encryption("Substitution methode",  "AZERTYUIOPQSDFGHJKLMWXCVBN", True)
+    "SUBSTITUTION METHODE"
     '''
     alphabet = string.ascii_uppercase
     cipherMessage = ""
     for letter in unidecode(message).upper():
         search = key.find(letter) if decode else alphabet.find(letter)
         cipherMessage += letter if search < 0 else alphabet[search] if decode else key[search]
-    print(f"\nLe message d'origine est:\n{cipherMessage}" if decode else f"\nVotre clé de chiffrement est:\n{' '.join(key)}\nVotre message chiffré est:\n{cipherMessage}")
+    print(
+        f"\nLe message d'origine est:\n{cipherMessage}" if decode else f"\nVotre clé de chiffrement est:\n{' '.join(key)}\nVotre message chiffré est:\n{cipherMessage}")
 
 
-def vigenere_encryption(message, key):
+def vigenere_encryption(message, key, decode=False):
     """
     Encrypts the message entered by the user using Vigenère cipher.
     >>> vigenere_encryption("J'adore écouter la radio toute la journée", "musique")
     "V'UVWHY IOIMBUL PM LSLYI XAOLM BU NAOJVUY"
+    >>> vigenere_encryption("V'UVWHY IOIMBUL PM LSLYI XAOLM BU NAOJVUY", "musique", True)
+    "J'ADORE ECOUTER LA RADIO TOUTE LA JOURNEE"
     """
 
-    def define_corresponding_letter(letterMessage, letterKey):
+    def define_corresponding_letter(letterMessage, letterKey, decode=False):
         """
         Return the letter corresponding to the letter of the message and the letter of the key.
         >>> define_corresponding_letter('B', 'Z')
         'A'
+        >>> define_corresponding_letter('A', 'Z', True)
+        'B'
         """
-        if define_position_letter(letterMessage) + \
-                define_position_letter(letterKey) > 25:
-            return chr(define_position_letter(letterMessage) +
-                       define_position_letter(letterKey) - 26 + 65)
+        if decode:
+            if define_position_letter(letterMessage) - \
+                    define_position_letter(letterKey) < 0:
+                return chr(define_position_letter(letterMessage) -
+                        define_position_letter(letterKey) + 26 + 65)
+            else:
+                return chr(define_position_letter(letterMessage) -
+                        define_position_letter(letterKey) + 65)
         else:
-            return chr(define_position_letter(letterMessage) +
-                       define_position_letter(letterKey) + 65)
+            if define_position_letter(letterMessage) + \
+                    define_position_letter(letterKey) > 25:
+                return chr(define_position_letter(letterMessage) +
+                        define_position_letter(letterKey) - 26 + 65)
+            else:
+                return chr(define_position_letter(letterMessage) +
+                        define_position_letter(letterKey) + 65)
 
     alphabet = string.ascii_uppercase
     cipherMessage = []
@@ -85,13 +101,21 @@ def vigenere_encryption(message, key):
                     '.',
             '').replace('\t', '').upper()):
         if letter in alphabet:
-            cipherMessage.append(
-                define_corresponding_letter(
-                    letter,
-                    unidecode(key).upper()[
-                        counter % len(
-                            unidecode(key).upper())]))
+            if decode:
+                cipherMessage.append(
+                    define_corresponding_letter(
+                        letter,
+                        unidecode(key).upper()[
+                            counter % len(
+                                unidecode(key).upper())], True))
+            else:
+                cipherMessage.append(
+                    define_corresponding_letter(
+                        letter,
+                        unidecode(key).upper()[
+                            counter % len(
+                                unidecode(key).upper())]))
     for counter, letter in enumerate(unidecode(message).upper()):
         if letter not in alphabet:
             cipherMessage.insert(counter, letter)
-    print(f"\nVotre message chiffré est:\n{''.join(cipherMessage)}")
+    print(f"\nLe message d'origine est:\n{''.join(cipherMessage)}" if decode else f"\nVotre message chiffré est:\n{''.join(cipherMessage)}")

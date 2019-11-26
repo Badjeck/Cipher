@@ -44,7 +44,7 @@ def show_error(
     else:
         print(
             f"L'option que vous venez d'entrer ({keyboard}) est incorrecte.\n")
-    
+
 
 def do_you_want_to_continue():
     """
@@ -88,7 +88,6 @@ def cipher_core():
             choiceOfOption = input("Entrez l'index d'une de ces options: ")
         return choiceOfOption
 
-
     choiceOfCipherMethod = ''
     message = ''
     while choiceOfCipherMethod != '1' and choiceOfCipherMethod != '2' and choiceOfCipherMethod != '3' and choiceOfCipherMethod.upper(
@@ -110,12 +109,16 @@ def cipher_core():
         print("                      CHIFFRE DE CÉSAR")
         print("---------------------------------------------------------------")
         while not message:
-            message = input("Entrez votre message: ") if choiceOfOption == '1' else input("Entrez le message chiffré: ")
+            message = input("Entrez votre message: ") if choiceOfOption == '1' else input(
+                "Entrez le message chiffré: ")
         offset = input("Entrez la valeur du décalage: ")
-        while offset.isnumeric() == False:
-            print("\n")
-            show_error(offset, True)
-            offset = input("\tVeuillez entrer le nombre de décalage: ")
+        while offset.isnumeric() == False or int(offset) >= 26:
+            if offset.isnumeric() == False:
+                print("\n")
+                show_error(offset, True)
+                offset = input("\tVeuillez entrer le nombre de décalage: ")
+            else:
+                offset = input("\nVous venez de dépasser la limite de décalage. (Max. 25)\nVeuillez entrer un nombre de décalage plus petit: ")
         if choiceOfOption == '1':
             caesar_encryption(message, int(offset))
         else:
@@ -129,7 +132,8 @@ def cipher_core():
         print("---------------------------------------------------------------")
         key = []
         while not message:
-            message = input("Entrez votre message: ") if choiceOfOption == '1' else input("Entrez le message chiffré: ")
+            message = input("Entrez votre message: ") if choiceOfOption == '1' else input(
+                "Entrez le message chiffré: ")
         if choiceOfOption == '1':
             print("\nCONFIGURATION DE L'ALPHABET DE SUBSTITUTION")
             for letterAlphabet in string.ascii_uppercase:
@@ -137,22 +141,37 @@ def cipher_core():
                 while len(letterUser) != 1 or letterUser.upper() in key or letterUser.isnumeric(
                 ) or letterUser.upper() == ' ' or curses.ascii.ispunct(letterUser):
                     print("\n")
-                    show_error(letterUser, False, True, True) if letterUser.upper() in key else show_error(letterUser, False, True)
+                    show_error(
+                        letterUser,
+                        False,
+                        True,
+                        True) if letterUser.upper() in key else show_error(
+                        letterUser,
+                        False,
+                        True)
                     letterUser = input(f"\t{letterAlphabet}: ")
                 else:
                     key.append(unidecode(letterUser).upper())
             substitution_encryption(message, key)
         else:
-            key = input("Entrez votre clé de chiffrement: ")
-            substitution_encryption(message, unidecode(key).upper(), True)
+            while len(key) != 26 or key.isnumeric():
+                key = input("Entrez votre clé de chiffrement: ")
+            substitution_encryption(message, unidecode(key).replace(' ', '').upper(), True)
         do_you_want_to_continue()
     elif choiceOfCipherMethod == '3':
+        choiceOfOption = display_options_message()
+        os.system("clear")
         print("---------------------------------------------------------------")
         print("                     CHIFFRE DE VIGENÈRE")
         print("---------------------------------------------------------------")
-        message = input("Entrez votre message: ")
+        while not message:
+            message = input("Entrez votre message: ") if choiceOfOption == '1' else input(
+                "Entrez le message chiffré: ")
         key = input("Entrez votre clé de chiffrement: ")
-        vigenere_encryption(message, key)
+        if choiceOfOption == '1':
+            vigenere_encryption(message, key)
+        else:
+            vigenere_encryption(message, key, True)
         do_you_want_to_continue()
     elif choiceOfCipherMethod.upper() == 'C':
         print("---------------------------------------------------------------")
